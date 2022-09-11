@@ -3,6 +3,7 @@ package com.desafioldm.api.controller;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,20 +11,13 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.desafioldm.Groups;
 import com.desafioldm.domain.model.User;
@@ -33,7 +27,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
-@RequestMapping(value = "/users")
+@RequestMapping(value = "/usuarios")
 public class UserController {
 
 	@Autowired
@@ -41,6 +35,9 @@ public class UserController {
 	
 	@Autowired
 	private UserService registrationUser;
+
+	@Autowired
+	private PasswordEncoder encoder;
 	
 	@GetMapping
 	public List<User> list() {
@@ -56,6 +53,7 @@ public class UserController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public User add(
 			@RequestBody @Validated(Groups.RegistrationUser.class) User user) {
+			user.setPassword(encoder.encode(user.getPassword()));
 			return registrationUser.save(user);
 	}
 	
@@ -66,18 +64,18 @@ public class UserController {
 		
 		BeanUtils.copyProperties(user, currentUser, 
 				"id", "registrationDate");
-		
+			user.setPassword(encoder.encode(user.getPassword()));
 			return registrationUser.save(currentUser);	
 	}
 	
 	@PatchMapping("/{userId}")
 	public User passwordUpdate(@PathVariable Long userId,
 			@RequestBody Map<String, Object> fields, HttpServletRequest request) {
-		User currentProduct = registrationUser.searchOrFail(userId);
+		User currentUser = registrationUser.searchOrFail(userId);
 		
-		merge(fields, currentProduct, request);
-		
-		return update(userId, currentProduct);
+		merge(fields, currentUser, request);
+		currentUser.setPassword(encoder.encode(currentUser.getPassword()));
+		return update(userId, currentUser);
 	}
 
 	private void merge(Map<String, Object> sourceData, User destinationUser,
@@ -104,6 +102,22 @@ public class UserController {
 			throw new HttpMessageNotReadableException(e.getMessage(), rootCause, serverHttpRequest);
 		}
 	}
+	@GetMapping("/validarSenha")
+	public ResponseEntity<Boolean> passwordValid(@RequestParam String login,
+												 @RequestParam String password) {
+
+		Optional<User> optUser = userRepository.findByLogin(login);
+		if (optUser.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+		}
+
+		User user = optUser.get();
+		boolean valid = encoder.matches(password, user.getPassword());
+
+		HttpStatus status = (valid) ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
+		return ResponseEntity.status(status).body(valid);
+	}
+
 	
 	@DeleteMapping("/{userId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
