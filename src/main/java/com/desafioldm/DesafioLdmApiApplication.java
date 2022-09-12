@@ -11,11 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @SpringBootApplication
 @EnableFeignClients
 public class DesafioLdmApiApplication {
-	
-	
+
 	public static void main(String[] args) {
 		SpringApplication.run(DesafioLdmApiApplication.class, args);
 	}
+
 	@Bean
 	public PasswordEncoder getPasswordEncoder() {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
