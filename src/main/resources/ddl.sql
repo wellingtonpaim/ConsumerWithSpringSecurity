@@ -253,3 +253,7 @@ create table user (id bigint not null auto_increment, name varchar(255) not null
 alter table user add constraint UK_gj2fy3dcix7ph7k8684gka40c unique (name);
 create table user (id bigint not null auto_increment, name varchar(255) not null, password varchar(255) not null, registration_date datetime not null, update_date datetime not null, primary key (id)) engine=MyISAM;
 alter table user add constraint UK_gj2fy3dcix7ph7k8684gka40c unique (name);
+create table user (id bigint not null auto_increment, name varchar(255) not null, password varchar(255) not null, registration_date datetime not null, update_date datetime not null, primary key (id)) engine=MyISAM;
+alter table user add constraint UK_gj2fy3dcix7ph7k8684gka40c unique (name);
+create table user (id bigint not null auto_increment, name varchar(255) not null, password varchar(255) not null, registration_date datetime not null, update_date datetime not null, primary key (id)) engine=MyISAM;
+alter table user add constraint UK_gj2fy3dcix7ph7k8684gka40c unique (name);
