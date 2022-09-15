@@ -89,8 +89,8 @@ public class SwaggerConfig {
 
 
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers( "/**.html",
+        web.ignoring().antMatchers( "/v2/api-docs", "/**.html",
                 "/webjars/**", "/configuration/**", "/swagger-resources/**");
     }
-//"/v2/api-docs",
+
 }

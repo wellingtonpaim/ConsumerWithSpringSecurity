@@ -33,7 +33,7 @@ public class FilmController {
 	String url = "https://swapi.dev/api/films/";
 	RestTemplate restTemplate = new RestTemplate();
 
-	@ApiOperation(value = "Retorna uma lista de planetas")
+	@ApiOperation(value = "Retorna uma lista de filmes")
 	@RequestMapping(method = RequestMethod.GET, produces="application/json")
 	public List<FilmDTO> getAllFilms() throws IOException {
 		try {

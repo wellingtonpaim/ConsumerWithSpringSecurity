@@ -35,7 +35,7 @@ public class JWTConfiguration extends WebSecurityConfigurerAdapter {
                .antMatchers(HttpMethod.POST, "/usuarios").permitAll()
                .antMatchers(HttpMethod.GET, "/swagger-resources/**").permitAll()
                .antMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
-//               .antMatchers(HttpMethod.GET, "/v2/api-docs/").permitAll()
+               .antMatchers(HttpMethod.GET, "/v2/api-docs").permitAll()
                .anyRequest().authenticated()
                .and()
                .addFilter(new JWTFilterAuthentication(authenticationManager()))
