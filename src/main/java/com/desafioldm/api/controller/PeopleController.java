@@ -6,13 +6,11 @@ import com.desafioldm.domain.model.People;
 import com.desafioldm.domain.service.PeopleService;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,7 +32,8 @@ public class PeopleController {
     String url = "https://swapi.dev/api/people/";
     RestTemplate restTemplate = new RestTemplate();
 
-    @GetMapping
+    @ApiOperation(value = "Retorna uma lista de pessoas")
+    @RequestMapping(method = RequestMethod.GET, produces="application/json")
     public List<PeopleDTO> getAllPeoples() throws IOException {
         try {
             return peopleService.getAllPeoples()
@@ -47,7 +46,8 @@ public class PeopleController {
         return null;
     }
 
-    @GetMapping("/{id}")
+    @ApiOperation(value = "Retorna uma pessoa especificada pelo id")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces="application/json")
     public PeopleDTO getFilmId(@PathVariable String id) {
         People people = null;
         Long peopleId = Long.parseLong(id);

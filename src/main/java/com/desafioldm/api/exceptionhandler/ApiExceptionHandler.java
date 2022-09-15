@@ -2,6 +2,7 @@ package com.desafioldm.api.exceptionhandler;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -54,7 +55,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 		String detail = String.format("The URL parameter '%s' received the value '%s', "
 				+ "which is of an invalid type. Correct and enter a value compatible with the type %s.",
-				ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName());
+				ex.getName(), ex.getValue(), Objects.requireNonNull(ex.getRequiredType()).getSimpleName());
 
 		Problem problem = createProblemBuilder(status, problemType, detail).build();
 
@@ -141,7 +142,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 	
 	@ExceptionHandler(BusinessException.class)
-	public ResponseEntity<?> handleNegocio(BusinessException ex, WebRequest request) {
+	public ResponseEntity<?> handleBusiness(BusinessException ex, WebRequest request) {
 
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		ProblemType problemType = ProblemType.BUSINESS_ERROR;

@@ -7,13 +7,11 @@ import com.desafioldm.domain.model.Film;
 import com.desafioldm.domain.service.FilmService;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,8 +32,9 @@ public class FilmController {
 	
 	String url = "https://swapi.dev/api/films/";
 	RestTemplate restTemplate = new RestTemplate();
-	
-	@GetMapping
+
+	@ApiOperation(value = "Retorna uma lista de planetas")
+	@RequestMapping(method = RequestMethod.GET, produces="application/json")
 	public List<FilmDTO> getAllFilms() throws IOException {
 		try {
 			return filmService.getAllFilms()
@@ -47,8 +46,9 @@ public class FilmController {
 		}
 		return null;
 	}
-	
-	@GetMapping("/{id}")
+
+	@ApiOperation(value = "Retorna um filme especificado pelo id")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces="application/json")
 	public FilmDTO getFilmId(@PathVariable String id) {
 		Film film = null;
 		Long filmId = Long.parseLong(id);

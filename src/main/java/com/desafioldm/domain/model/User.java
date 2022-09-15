@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,19 +24,20 @@ import lombok.EqualsAndHashCode;
 @Entity(name="User")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 public class User {
 	
 	@Id
-	@EqualsAndHashCode.Include
+	@ApiModelProperty(value = "ID do usuário")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
+	@ApiModelProperty(value = "Nome de usuário")
 	@NotBlank
 	@Column(name = "name", nullable = false, unique = true)
 	private String login;
-	
+
+	@ApiModelProperty(value = "Senha de usuário")
 	@Column(name = "password", nullable = false)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;

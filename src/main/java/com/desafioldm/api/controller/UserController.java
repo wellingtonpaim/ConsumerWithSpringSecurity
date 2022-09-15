@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
-@RequestMapping(value = "/usuarios")
+@RequestMapping("/usuarios")
 public class UserController {
 
 	@Autowired
@@ -38,26 +39,31 @@ public class UserController {
 
 	@Autowired
 	private PasswordEncoder encoder;
-	
-	@GetMapping
+
+	@ApiOperation(value = "Retorna a lista contendo todos os usuários")
+	@RequestMapping(method = RequestMethod.GET, produces="application/json")
 	public List<User> list() {
 		return userRepository.findAll();
 	}
-	
-	@GetMapping("/{userId}")
+
+	@ApiOperation(value = "Retorna um usuário especificado pelo id")
+	@RequestMapping(value = "/{userId}", method = RequestMethod.GET, produces="application/json")
 	public User search(@PathVariable Long userId) {
 		return registrationUser.searchOrFail(userId);
 	}
-	
-	@PostMapping
+
+	@ApiOperation(value = "Cria um novo usuário")
+	@RequestMapping(method =  RequestMethod.POST, produces="application/json", consumes="application/json")
 	@ResponseStatus(HttpStatus.CREATED)
 	public User add(
 			@RequestBody @Validated(Groups.RegistrationUser.class) User user) {
 			user.setPassword(encoder.encode(user.getPassword()));
 			return registrationUser.save(user);
 	}
-	
-	@PutMapping("/{userId}")
+
+	@ApiOperation(value = "Atualiza um usuário por completo, login e password especificado pelo id")
+	@RequestMapping(value = "/{userId}", method = RequestMethod.PUT,
+							produces="application/json", consumes="application/json")
 	public User update(@PathVariable Long userId,
 			@RequestBody User user) {
 		User currentUser = registrationUser.searchOrFail(userId);
@@ -67,8 +73,10 @@ public class UserController {
 			user.setPassword(encoder.encode(user.getPassword()));
 			return registrationUser.save(currentUser);	
 	}
-	
-	@PatchMapping("/{userId}")
+
+	@ApiOperation(value = "Atualiza a password do usuário especificado pelo id")
+	@RequestMapping(value = "/{userId}", method = RequestMethod.PATCH,
+							produces="application/json", consumes="application/json")
 	public User passwordUpdate(@PathVariable Long userId,
 			@RequestBody Map<String, Object> fields, HttpServletRequest request) {
 		User currentUser = registrationUser.searchOrFail(userId);
@@ -102,7 +110,9 @@ public class UserController {
 			throw new HttpMessageNotReadableException(e.getMessage(), rootCause, serverHttpRequest);
 		}
 	}
-	@GetMapping("/validarSenha")
+
+	@ApiOperation(value = "Valida um usuário checando o login e password")
+	@RequestMapping(value = "/validarSenha", method = RequestMethod.GET, produces="application/json")
 	public ResponseEntity<Boolean> passwordValid(@RequestParam String login,
 												 @RequestParam String password) {
 
@@ -118,8 +128,8 @@ public class UserController {
 		return ResponseEntity.status(status).body(valid);
 	}
 
-	
-	@DeleteMapping("/{userId}")
+	@ApiOperation(value = "Exclui um usuário")
+	@RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable Long userId) {
 			registrationUser.delete(userId);
