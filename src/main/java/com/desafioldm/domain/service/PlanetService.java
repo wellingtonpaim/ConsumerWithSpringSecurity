@@ -7,9 +7,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,40 +21,48 @@ import java.util.List;
 @Service
 public class PlanetService {
 
-    String url = "https://swapi.dev/api/planets/";
-    RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private WebClient webclient;
+
     ObjectMapper mapper = new ObjectMapper();
+
+    String RESULT_FIELD = "results";
 
     public List<Planet> getAllPlanets() throws IOException {
 
-        String result = restTemplate.getForObject(url,String.class);
-        String RESULT_FIELD = "results";
+        String response = this.webclient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.path("planets/").build())
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
 
-        JsonNode node = mapper.readValue(result, JsonNode.class);
+        JsonNode node = mapper.readValue(response, JsonNode.class);
 
         if (node.isObject()) {
             ObjectNode obj = mapper.convertValue(node, ObjectNode.class);
             if (obj.has(RESULT_FIELD)) {
                 JsonNode listPlanet = obj.get(RESULT_FIELD);
-
                 ObjectReader reader = mapper.readerFor(new TypeReference<List<Planet>>() {
                 });
-
                 List<Planet> planetList = reader.readValue(listPlanet);
-
                 return planetList;
             }
         }
         return null;
     }
 
-    public Planet getPlanetId(String id) throws JsonProcessingException,
-            HttpClientErrorException.NotFound{
-        String urlId = url.concat(id);
-        ObjectReader reader = mapper.readerFor(new TypeReference<Planet>() {});
-        String planetConsumed = restTemplate.getForObject(urlId, String.class);
-        Planet planet = reader.readValue(planetConsumed);
+    public Planet getPlanetId(Long id) throws JsonProcessingException ,
+            HttpClientErrorException.NotFound {
 
+        Mono<Planet> planetMono = this.webclient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.path("planets/{id}").build(id))
+                .retrieve()
+                .bodyToMono(Planet.class);
+
+        Planet planet = planetMono.block();
         return planet;
     }
 }

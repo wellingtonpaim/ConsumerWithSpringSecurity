@@ -1,12 +1,8 @@
 package com.desafioldm.api.controller;
 
-import com.desafioldm.api.exceptionhandler.FilmNotFoundException;
 import com.desafioldm.api.exceptionhandler.PlanetNotFoundException;
-import com.desafioldm.domain.DTO.FilmDTO;
 import com.desafioldm.domain.DTO.PlanetDTO;
-import com.desafioldm.domain.model.Film;
 import com.desafioldm.domain.model.Planet;
-import com.desafioldm.domain.service.FilmService;
 import com.desafioldm.domain.service.PlanetService;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,7 +10,10 @@ import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,12 +32,12 @@ public class PlanetController {
     @Qualifier("planetModelMapper")
     private ModelMapper planetModelMapper;
 
-    String url = "https://swapi.dev/api/planets/";
     RestTemplate restTemplate = new RestTemplate();
 
     @ApiOperation(value = "Retorna uma lista de planetas")
     @RequestMapping(method = RequestMethod.GET, produces="application/json")
     public List<PlanetDTO> getAllPlanets() throws IOException {
+
         try {
             return planetService.getAllPlanets()
                     .stream()
@@ -52,13 +51,13 @@ public class PlanetController {
 
     @ApiOperation(value = "Retorna um planeta especificado pelo id")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces="application/json")
-    public PlanetDTO getPlanetId(@PathVariable String id) {
+    public PlanetDTO getPlanetId(@PathVariable Long id) {
         Planet planet = null;
-        Long planetId = Long.parseLong(id);
+
         try {
             return toPlanetDTO(planetService.getPlanetId(id));
         } catch (HttpClientErrorException.NotFound e){
-            throw new PlanetNotFoundException(planetId);
+            throw new PlanetNotFoundException(id);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

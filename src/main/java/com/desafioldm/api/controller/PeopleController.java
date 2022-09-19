@@ -29,14 +29,14 @@ public class PeopleController {
     @Qualifier("peopleModelMapper")
     private ModelMapper peopleModelMapper;
 
-    String url = "https://swapi.dev/api/people/";
     RestTemplate restTemplate = new RestTemplate();
 
     @ApiOperation(value = "Retorna uma lista de pessoas")
     @RequestMapping(method = RequestMethod.GET, produces="application/json")
     public List<PeopleDTO> getAllPeoples() throws IOException {
+
         try {
-            return peopleService.getAllPeoples()
+            return peopleService.getAllPeople()
                     .stream()
                     .map(this::toPeopleDTO)
                     .collect(Collectors.toList());
@@ -48,13 +48,13 @@ public class PeopleController {
 
     @ApiOperation(value = "Retorna uma pessoa especificada pelo id")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces="application/json")
-    public PeopleDTO getFilmId(@PathVariable String id) {
+    public PeopleDTO getFilmId(@PathVariable Long id) {
         People people = null;
-        Long peopleId = Long.parseLong(id);
+
         try {
             return toPeopleDTO(peopleService.getPeopleId(id));
         } catch (HttpClientErrorException.NotFound e){
-            throw new PeopleNotFoundException(peopleId);
+            throw new PeopleNotFoundException(id);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

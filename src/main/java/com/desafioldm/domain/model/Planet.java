@@ -5,16 +5,13 @@ import java.util.List;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder(toBuilder = true)
 public class Planet {
-	
-	@EqualsAndHashCode.Include
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
 	
 	private String name;
 	

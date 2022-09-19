@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,7 @@ public class JWTFilterAuthentication extends UsernamePasswordAuthenticationFilte
 
     public static final int TOKEN_EXPIRATION = 600_000;
 
-    public static final String TOKEN_VALUE = "${TOKEN_KEY}";
+    public static final String  TOKEN_VALUE = "${TOKEN_KEY}";
 
     @Autowired
     private AuthenticationManager authenticationManager;
