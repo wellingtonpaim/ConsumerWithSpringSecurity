@@ -89,7 +89,7 @@ public class SwaggerConfig {
 
 
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers( "/v2/api-docs", "/**.html",
+        web.ignoring().antMatchers(  "/console/**" ,"/v2/api-docs", "/**.html",
                 "/webjars/**", "/configuration/**", "/swagger-resources/**");
     }
 

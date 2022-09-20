@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@Entity(name="User")
+@Entity(name="UserModel")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -30,26 +30,26 @@ public class User {
 	@Id
 	@ApiModelProperty(value = "ID do usuário")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long userId;
 
 	@ApiModelProperty(value = "Nome de usuário")
 	@NotBlank
-	@Column(name = "name", nullable = false, unique = true)
+	@Column(name = "userName", nullable = false, unique = true)
 	private String login;
 
 	@ApiModelProperty(value = "Senha de usuário")
-	@Column(name = "password", nullable = false)
+	@Column(name = "userPassword", nullable = false)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
 	
 	@JsonIgnore
 	@CreationTimestamp
-	@Column(name = "registration_date", nullable = false, columnDefinition = "datetime")
+	@Column(name = "registrationDate", nullable = false, columnDefinition = "datetime")
 	private LocalDateTime registrationDate;
 	
 	@JsonIgnore
 	@UpdateTimestamp
-	@Column(name = "update_date", nullable = false, columnDefinition = "datetime")
+	@Column(name = "updateDate", nullable = false, columnDefinition = "datetime")
 	private LocalDateTime updateDate;
 
 }

@@ -30,7 +30,9 @@ public class JWTConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-       http.csrf().disable().authorizeRequests()
+       http.csrf().disable().authorizeRequests();
+        http.authorizeRequests().antMatchers("/")
+                .permitAll().and().authorizeRequests().antMatchers("/console/**").permitAll()
                .antMatchers(HttpMethod.POST, "/login").permitAll()
                .antMatchers(HttpMethod.POST, "/usuarios").permitAll()
                .antMatchers(HttpMethod.GET, "/swagger-resources/**").permitAll()
@@ -41,6 +43,9 @@ public class JWTConfiguration extends WebSecurityConfigurerAdapter {
                .addFilter(new JWTFilterAuthentication(authenticationManager()))
                .addFilter(new JWTFilterValidation(authenticationManager()))
                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.headers().frameOptions().disable();
+
     }
 
     @Bean
